@@ -102,3 +102,30 @@ def eliminar_por_id(
         return{
             "Alerta": f"Beca con id  #{id} ha sido eliminada del sistema!"
         }
+
+
+@router.put("/{id}")
+def actualizar_beca(
+    id: int,
+    json: RevisarBecas,
+    base_datos: Session = Depends(abrir_puerta_a_bd)
+):
+    check = base_datos.query(Becas).filter(Becas.id == id).first()
+    
+    if check is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"La beca con id {id} no existe"
+        )
+    
+    check.tipo_beca = json.tipo_beca
+    check.porcentaje_descuento = json.porcentaje_descuento
+    check.duracion = json.duracion
+    
+    base_datos.commit()
+    base_datos.refresh(check)
+    
+    return {
+        "Alerta": f"Beca {id} actualizada correctamente",
+        "beca": check
+    }
