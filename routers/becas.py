@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 from models.almacen import miClaseBase, abrir_puerta_a_bd
 from models.filtro_seguridad import RevisarBecas
 from models.tablas import Becas
+from routers.recepcion import el_vigilante
 
 
 router = APIRouter(
@@ -16,6 +17,7 @@ router = APIRouter(
 
 @router.get("/")
 def ver_listado_de_becas(
+    info_user : dict = Depends(el_vigilante),
     base_datos: Session = Depends(abrir_puerta_a_bd)
 ):
     many = 0
@@ -32,7 +34,7 @@ def ver_listado_de_becas(
         
         return {
             
-            "Älerta": f"Se encontraron {many} becas",
+            "Alerta": f"Se encontraron {many} becas",
             "Becas": revisar
         }
             
