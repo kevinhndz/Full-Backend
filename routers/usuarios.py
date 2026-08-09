@@ -2,8 +2,9 @@ from fastapi import HTTPException, status, Depends, APIRouter
 from sqlalchemy.orm import Session
 
 from models.almacen import abrir_puerta_a_bd
-from models.filtro_seguridad import RevisarUsuarios
+from models.filtro_seguridad import RevisarUsuarios, RevisarLogin
 from models.tablas import Usuarios
+from utils.boletos import crear_boleto, verificar_boleto
 
 router = APIRouter(
     prefix="/usuarios",
@@ -99,3 +100,41 @@ def eliminar_por_id(id: int, base_datos: Session = Depends(abrir_puerta_a_bd)):
         return{
             "Alerta": f"Usuario con id #{id} ha sido eliminado del sistema!"
         }
+
+
+
+#APLICANDO JSON WEB TOKENS
+
+
+@router.post("/login")
+def login(
+    
+    json: RevisarLogin,
+    base_datos: Session = Depends(abrir_puerta_a_bd)
+    
+):
+    check = base_datos.query(Usuarios).filter(Usuarios.user == json.user).first()
+    
+    if check is None:
+        raise HTTPException(
+            status_code = status.HTTP_404_NOT_FOUND,
+            detail = f"Error el usuario: {json.user} no ha sido encontrado"
+        )
+    
+    if check.password != json.password:
+        raise HTTPException(
+                    status_code = status.HTTP_401_UNAUTHORIZED,
+                    detail = f"Contrasena Incorrecta"
+                )
+    
+    boleto = crear_boleto(check.id,check.password)
+    
+    return {
+        "boleto": boleto,
+        "user": check.user
+    }
+    
+    
+        
+    
+    

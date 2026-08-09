@@ -94,3 +94,10 @@ class RevisarInsc_Profesor_Carrera(BaseModel):
 class RevisarInsc_Profesor_Seguro(BaseModel):
     id_profesor: int
     id_seguro: int
+    
+class RevisarLogin(BaseModel):
+    user: str = Field(min_length=5, max_length=20)
+    password: str = Field(min_length=8, max_length=25)
+    
+    
+    
