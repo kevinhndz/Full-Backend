@@ -1,9 +1,9 @@
 from sqlalchemy import Integer, String, ForeignKey, Column, Float
-from models.almacen import MiClaseBase  
+from models.almacen import miClaseBase 
 from sqlalchemy.orm import relationship
 
 
-class Usuarios(MiClaseBase):
+class Usuarios(miClaseBase):
     __tablename__ = "Usuarios"
     
     id = Column(Integer, primary_key=True)
@@ -16,7 +16,7 @@ class Usuarios(MiClaseBase):
     recursoshumanos = relationship("RecursosHumanos", back_populates="usuario")
 
 
-class Becas(MiClaseBase):
+class Becas(miClaseBase):
     __tablename__ = "Becas"
     
     id = Column(Integer, primary_key=True)
@@ -28,7 +28,7 @@ class Becas(MiClaseBase):
     estudiantes = relationship("Estudiantes", back_populates="beca")
 
 
-class Carreras(MiClaseBase):
+class Carreras(miClaseBase):
     __tablename__ = "Carreras"
     
     id = Column(Integer, primary_key=True)
@@ -41,7 +41,7 @@ class Carreras(MiClaseBase):
     profesores = relationship("Insc_Profesor_Carrera", back_populates="carrera")
 
 
-class Clases(MiClaseBase):
+class Clases(miClaseBase):
     __tablename__ = "Clases"
     
     id = Column(Integer, primary_key=True)
@@ -57,7 +57,7 @@ class Clases(MiClaseBase):
     profesores = relationship("Insc_Profesor_Clase", back_populates="clase")
 
 
-class Seguros(MiClaseBase):
+class Seguros(miClaseBase):
     __tablename__ = "Seguros"
     
     id = Column(Integer, primary_key=True)
@@ -69,7 +69,7 @@ class Seguros(MiClaseBase):
     profesores = relationship("Insc_Profesor_Seguro", back_populates="seguro")
 
 
-class Estudiantes(MiClaseBase):
+class Estudiantes(miClaseBase):
     __tablename__ = "Estudiantes"
     
     id = Column(Integer, primary_key=True)
@@ -94,7 +94,7 @@ class Estudiantes(MiClaseBase):
     clases = relationship("Insc_Estudiante_Clase", back_populates="estudiante")
 
 
-class Profesores(MiClaseBase):
+class Profesores(miClaseBase):
     __tablename__ = "Profesores"
     
     id = Column(Integer, primary_key=True)
@@ -119,7 +119,7 @@ class Profesores(MiClaseBase):
     nomina = relationship("Nomina", back_populates="profesor")
 
 
-class RecursosHumanos(MiClaseBase):
+class RecursosHumanos(miClaseBase):
     __tablename__ = "RecursosHumanos"
     
     id = Column(Integer, primary_key=True)
@@ -137,7 +137,7 @@ class RecursosHumanos(MiClaseBase):
     nomina = relationship("Nomina", back_populates="rrhh")
 
 
-class Nomina(MiClaseBase):
+class Nomina(miClaseBase):
     __tablename__ = "Nomina"
     
     id = Column(Integer, primary_key=True)
@@ -153,7 +153,7 @@ class Nomina(MiClaseBase):
 
 # ===== TABLAS DE INTERSECCIONES (MUCHOS A MUCHOS) =====
 
-class Insc_Estudiante_Clase(MiClaseBase):
+class Insc_Estudiante_Clase(miClaseBase):
     __tablename__ = "Inscripcion_Estudiante_Clase"  
     
     id = Column(Integer, primary_key=True)
@@ -167,7 +167,7 @@ class Insc_Estudiante_Clase(MiClaseBase):
     clase = relationship("Clases", back_populates="estudiantes")
 
 
-class Insc_Profesor_Clase(MiClaseBase):
+class Insc_Profesor_Clase(miClaseBase):
     __tablename__ = "Inscripcion_Profesor_Clase"  
     
     id = Column(Integer, primary_key=True)
@@ -181,7 +181,7 @@ class Insc_Profesor_Clase(MiClaseBase):
     clase = relationship("Clases", back_populates="profesores")
 
 
-class Insc_Profesor_Carrera(MiClaseBase):
+class Insc_Profesor_Carrera(miClaseBase):
     __tablename__ = "Inscripcion_Profesor_Carrera"  
     
     id = Column(Integer, primary_key=True)
@@ -195,7 +195,7 @@ class Insc_Profesor_Carrera(MiClaseBase):
     carrera = relationship("Carreras", back_populates="profesores")
 
 
-class Insc_Profesor_Seguro(MiClaseBase):  
+class Insc_Profesor_Seguro(miClaseBase):  
     __tablename__ = "Inscripcion_Profesor_Seguro"
     
     id = Column(Integer, primary_key=True)

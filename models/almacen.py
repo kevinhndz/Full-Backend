@@ -8,7 +8,9 @@ load_dotenv()
 UBICACION_ALMACEN = os.getenv("UBICACION_ALMACEN")
 motor = create_engine(UBICACION_ALMACEN)
 llaves = sessionmaker(motor)
-miClaseBase = DeclarativeBase()
+
+class miClaseBase(DeclarativeBase):
+    pass
 
 def abrir_puerta_a_bd():
     try:
