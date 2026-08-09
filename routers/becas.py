@@ -82,3 +82,23 @@ def crear_beca(
             status_code =status.HTTP_409_CONFLICT,
             detail = f"{json.tipo_beca} ya se encuentra resgistrada. Te equivocaste?"
         )
+
+
+@router.delete("/{id}")
+def eliminar_por_id(
+    
+    id: int,
+    base_datos: Session= Depends(abrir_puerta_a_bd)
+):
+    check = base_datos.query(Becas).filter(Becas.id == id).first()
+    if check is None:
+        raise HTTPException(
+            status_code= status.HTTP_409_CONFLICT,
+            detail = f"Error, {id} de Beca no se encuentra en el sistema"
+        )
+    else:
+        base_datos.delete(check)
+        base_datos.commit()
+        return{
+            "Alerta": f"Beca con id  #{id} ha sido eliminada del sistema!"
+        }
