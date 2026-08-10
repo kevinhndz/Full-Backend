@@ -101,11 +101,11 @@ A continuacion el boceto original en el que se penso el modelo relacional (papel
 
 **Boceto inicial (diseño a mano):**
 
-![Diseño a mano de la base de datos](db_hecha_a_mano.jpg)
+![Diseño a mano de la base de datos](/img/db_hecha_a_mano.jpg)
 
 **Diagrama final de la base de datos:**
 
-![Diagrama final de la base de datos](dbpi.png)
+![Diagrama final de la base de datos](img/dbpi.png)
 
 Resumen de las relaciones principales:
 
