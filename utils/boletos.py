@@ -1,25 +1,26 @@
 import os
 from dotenv import load_dotenv
-from datetime import datetime, timedelta  
-from jose import jwt, JWTError    
-             
+from datetime import datetime, timezone, timedelta  
+from jose import jwt, JWTError
+
 load_dotenv()
 
-SECRET_KEY = os.getenv("SECRET_KEY")        
-         
-def crear_boleto(usuario_id: int, usuario: str):  
-    expira_en = datetime.utcnow() + timedelta(minutes=30)  
+SECRET_KEY = os.getenv("SECRET_KEY")
+
+def crear_boleto(usuario_id: int, usuario: str, rol: str): 
+   
+    expira_en = datetime.now(timezone.utc) + timedelta(minutes=30)  
     
-    datos = {                             
+    datos = {                         
         "user_id": usuario_id,
         "user": usuario,
+        "rol": rol,
         "exp": expira_en
     }
     
     boleto = jwt.encode(  datos, 
-                          SECRET_KEY, 
+                         SECRET_KEY, 
                          algorithm="HS256"
-                         
                          )  
     
     return boleto                         
@@ -27,10 +28,8 @@ def crear_boleto(usuario_id: int, usuario: str):
 
 def verificar_boleto(token: str):
     try:
-        
         datos = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
         return datos  
     
     except JWTError:
-        
         return None

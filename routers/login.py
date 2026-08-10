@@ -30,26 +30,13 @@ def login(
                 )
     
   
-    boleto = crear_boleto(check.id, check.user)
+    boleto = crear_boleto(check.id, check.user, check.rol)
     
     return {
         "boleto": boleto,
-        "user": check.user
+        "user": check.user,
+        "rol": check.rol
     }
-    
 
-def el_vigilante(token: str = Header(...)):
-    # 1. El vigilante recibe el 'token' que viene en el encabezado de la web
-    
-    # 2. verificar si el boleto es real
-    datos_del_usuario = verificar_boleto(token)
-    
-    # 3. Si 'verificar_boleto' devuelve None, es que el boleto es falso o caduco
-    if datos_del_usuario is None:
-        raise HTTPException(status_code=401, detail="Boleto no valido")
-    else:
-        # 4. Si el boleto es real, el vigilante deja pasar (devuelve los datos)
-          return datos_del_usuario
-    
     
     

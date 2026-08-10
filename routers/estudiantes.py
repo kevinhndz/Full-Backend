@@ -5,13 +5,18 @@ from models.almacen import abrir_puerta_a_bd
 from models.filtro_seguridad import RevisarEstudiantes
 from models.tablas import Estudiantes
 
+
+from utils.seguridad import  solo_administrador,  solo_profesor, administrador_o_profesor
 router = APIRouter(
     prefix="/estudiantes",
     tags=["Estudiantes"]
 )
 
 @router.get("/")
-def ver_listado_de_estudiantes(base_datos: Session = Depends(abrir_puerta_a_bd)):
+def ver_listado_de_estudiantes(
+    
+    info_user : dict = Depends(administrador_o_profesor),
+    base_datos: Session = Depends(abrir_puerta_a_bd)):
     many = 0
     revisar = base_datos.query(Estudiantes).all()
     
@@ -29,7 +34,11 @@ def ver_listado_de_estudiantes(base_datos: Session = Depends(abrir_puerta_a_bd))
         }
 
 @router.get("/{id_url}")
-def filtrar_por_id(id_url: int, base_datos: Session = Depends(abrir_puerta_a_bd)):
+def filtrar_por_id(
+     
+     id_url: int, 
+     info_user: dict = Depends(administrador_o_profesor),
+     base_datos: Session = Depends(abrir_puerta_a_bd)):
     check = base_datos.query(Estudiantes).filter(Estudiantes.id == id_url).first()
     
     if check is None:
@@ -41,7 +50,7 @@ def filtrar_por_id(id_url: int, base_datos: Session = Depends(abrir_puerta_a_bd)
         return check
 
 @router.post("/", status_code=status.HTTP_201_CREATED)
-def crear_estudiante(json: RevisarEstudiantes, base_datos: Session = Depends(abrir_puerta_a_bd)):
+def crear_estudiante(json: RevisarEstudiantes,info_user: dict = Depends(solo_administrador), base_datos: Session = Depends(abrir_puerta_a_bd)):
     check_cuenta = base_datos.query(Estudiantes).filter(Estudiantes.cuenta == json.cuenta).first()
     check_correo = base_datos.query(Estudiantes).filter(Estudiantes.correo == json.correo).first()
     
@@ -79,7 +88,7 @@ def crear_estudiante(json: RevisarEstudiantes, base_datos: Session = Depends(abr
     }
 
 @router.put("/{id}")
-def actualizar_estudiante(id: int, json: RevisarEstudiantes, base_datos: Session = Depends(abrir_puerta_a_bd)):
+def actualizar_estudiante(id: int, json: RevisarEstudiantes,info_user: dict = Depends(administrador_o_profesor), base_datos: Session = Depends(abrir_puerta_a_bd)):
     check = base_datos.query(Estudiantes).filter(Estudiantes.id == id).first()
     
     if check is None:
@@ -109,7 +118,7 @@ def actualizar_estudiante(id: int, json: RevisarEstudiantes, base_datos: Session
     }
 
 @router.delete("/{id}")
-def eliminar_por_id(id: int, base_datos: Session = Depends(abrir_puerta_a_bd)):
+def eliminar_por_id(id: int, info_user: dict = Depends(solo_administrador),base_datos: Session = Depends(abrir_puerta_a_bd)):
     check = base_datos.query(Estudiantes).filter(Estudiantes.id == id).first()
     if check is None:
         raise HTTPException(

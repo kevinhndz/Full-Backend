@@ -1,23 +1,21 @@
 from fastapi import FastAPI, HTTPException, status, Depends, APIRouter
 from sqlalchemy.orm import Session
 
-#imports de Modulo Models (base datos)
 from models.almacen import miClaseBase, abrir_puerta_a_bd
 from models.filtro_seguridad import RevisarBecas
 from models.tablas import Becas
-from routers.recepcion import el_vigilante
+from utils.seguridad import el_vigilante, solo_administrador, administrador_o_profesor
 
 
 router = APIRouter(
     prefix = "/becas",
     tags = ["Becas"]
-    
 )
 
 
 @router.get("/")
 def ver_listado_de_becas(
-    info_user : dict = Depends(el_vigilante),
+    info_user : dict = Depends(administrador_o_profesor),  
     base_datos: Session = Depends(abrir_puerta_a_bd)
 ):
     many = 0
@@ -33,7 +31,6 @@ def ver_listado_de_becas(
             many += 1
         
         return {
-            
             "Alerta": f"Se encontraron {many} becas",
             "Becas": revisar
         }
@@ -41,11 +38,10 @@ def ver_listado_de_becas(
             
 @router.get("/{id_url}")
 def filtrar_por_id (
-    
-    id_url: int,
+    id_url: int,  
+    info_user : dict = Depends(administrador_o_profesor),  
     base_datos : Session = Depends(abrir_puerta_a_bd)
 ):
-    
     check = base_datos.query(Becas).filter(Becas.id == id_url).first()
     
     if check is None:
@@ -58,8 +54,8 @@ def filtrar_por_id (
 
 @router.post("/", status_code = status.HTTP_201_CREATED)
 def crear_beca(
-    
-    json : RevisarBecas,
+    json : RevisarBecas,  
+    info_user: dict = Depends(solo_administrador),  
     base_datos: Session = Depends(abrir_puerta_a_bd)
 ):
     check = base_datos.query(Becas).filter(Becas.tipo_beca ==json.tipo_beca).first()
@@ -67,7 +63,6 @@ def crear_beca(
     if check is None:
         
         new_data = Becas(
-            
             tipo_beca = json.tipo_beca,
             porcentaje_descuento = json.porcentaje_descuento,
             duracion = json.duracion  
@@ -88,8 +83,8 @@ def crear_beca(
 
 @router.delete("/{id}")
 def eliminar_por_id(
-    
     id: int,
+    info_user: dict = Depends(solo_administrador),  
     base_datos: Session= Depends(abrir_puerta_a_bd)
 ):
     check = base_datos.query(Becas).filter(Becas.id == id).first()
@@ -109,7 +104,8 @@ def eliminar_por_id(
 @router.put("/{id}")
 def actualizar_beca(
     id: int,
-    json: RevisarBecas,
+    json: RevisarBecas,  
+    info_user: dict = Depends(solo_administrador),  
     base_datos: Session = Depends(abrir_puerta_a_bd)
 ):
     check = base_datos.query(Becas).filter(Becas.id == id).first()

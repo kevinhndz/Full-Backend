@@ -5,13 +5,15 @@ from models.almacen import miClaseBase, abrir_puerta_a_bd
 from models.filtro_seguridad import RevisarCarreras
 from models.tablas import Carreras
 
+from utils.seguridad import todos_pueden, solo_administrador
+
 router = APIRouter(
     prefix="/carreras",
     tags=["Carreras"]
 )
 
 @router.get("/")
-def ver_listado_de_carreras(base_datos: Session = Depends(abrir_puerta_a_bd)):
+def ver_listado_de_carreras(info_user: dict = Depends(todos_pueden),base_datos: Session = Depends(abrir_puerta_a_bd)):
     many = 0
     revisar = base_datos.query(Carreras).all()
     
@@ -29,7 +31,7 @@ def ver_listado_de_carreras(base_datos: Session = Depends(abrir_puerta_a_bd)):
         }
 
 @router.get("/{id_url}")
-def filtrar_por_id(id_url: int, base_datos: Session = Depends(abrir_puerta_a_bd)):
+def filtrar_por_id(id_url: int,info_user: dict = Depends(todos_pueden), base_datos: Session = Depends(abrir_puerta_a_bd)):
     check = base_datos.query(Carreras).filter(Carreras.id == id_url).first()
     
     if check is None:
@@ -41,7 +43,7 @@ def filtrar_por_id(id_url: int, base_datos: Session = Depends(abrir_puerta_a_bd)
         return check
 
 @router.post("/", status_code=status.HTTP_201_CREATED)
-def crear_carrera(json: RevisarCarreras, base_datos: Session = Depends(abrir_puerta_a_bd)):
+def crear_carrera(json: RevisarCarreras, info_user: dict = Depends(solo_administrador), base_datos: Session = Depends(abrir_puerta_a_bd)):
     check = base_datos.query(Carreras).filter(Carreras.nombre == json.nombre).first()
     
     if check is None:
@@ -64,7 +66,7 @@ def crear_carrera(json: RevisarCarreras, base_datos: Session = Depends(abrir_pue
         )
 
 @router.put("/{id}")
-def actualizar_carrera(id: int, json: RevisarCarreras, base_datos: Session = Depends(abrir_puerta_a_bd)):
+def actualizar_carrera(id: int, json: RevisarCarreras, info_user: dict = Depends(solo_administrador), base_datos: Session = Depends(abrir_puerta_a_bd)):
     check = base_datos.query(Carreras).filter(Carreras.id == id).first()
     
     if check is None:
@@ -86,7 +88,7 @@ def actualizar_carrera(id: int, json: RevisarCarreras, base_datos: Session = Dep
     }
 
 @router.delete("/{id}")
-def eliminar_por_id(id: int, base_datos: Session = Depends(abrir_puerta_a_bd)):
+def eliminar_por_id(id: int,info_user: dict = Depends(solo_administrador), base_datos: Session = Depends(abrir_puerta_a_bd)):
     check = base_datos.query(Carreras).filter(Carreras.id == id).first()
     if check is None:
         raise HTTPException(
