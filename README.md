@@ -11,13 +11,12 @@ Proyecto academico desarrollado con **FastAPI** y **SQLAlchemy** que administra 
 5. [Esquema de la base de datos](#esquema-de-la-base-de-datos)
 6. [Requisitos previos](#requisitos-previos)
 7. [Instalacion paso a paso](#instalacion-paso-a-paso)
-8. [Variables de entorno](#variables-de-entorno)
-9. [Ejecutar el proyecto](#ejecutar-el-proyecto)
-10. [Roles y autenticacion](#roles-y-autenticacion)
-11. [Como probar los endpoints](#como-probar-los-endpoints)
-12. [Documento de pruebas](#documento-de-pruebas-json-ejemplos)
-13. [Modulos y endpoints disponibles](#modulos-y-endpoints-disponibles)
-14. [Notas finales](#notas-finales)
+8. [Ejecutar el proyecto](#ejecutar-el-proyecto)
+9. [Roles y autenticacion](#roles-y-autenticacion)
+10. [Como probar los endpoints](#como-probar-los-endpoints)
+11. [Documento de pruebas](#documento-de-pruebas-json-ejemplos)
+12. [Modulos y endpoints disponibles](#modulos-y-endpoints-disponibles)
+13. [Notas finales](#notas-finales)
 
 ---
 
@@ -26,10 +25,13 @@ Proyecto academico desarrollado con **FastAPI** y **SQLAlchemy** que administra 
 Cuando clones o descargues este proyecto, veras los siguientes archivos principales:
 
 - **`README.md`** - Este archivo con toda la documentacion del proyecto
+- **`requirements.txt`** - Lista de dependencias de Python (se instalan con `pip install -r requirements.txt`)
+- **`.gitignore`** - Archivo que indica a Git cuales archivos NO subir al repositorio (protege archivos como `.env`, `__pycache__`, `venv/`, etc)
+- **`.env`** - Archivo de configuracion (TU DEBES CREARLO, ver paso 5 de instalacion). No viene en el repo pero debes agregarlo
 - **`Pruebas_API.docx`** - Documento Word con ejemplos de JSON para probar cada endpoint (descargalo para tener a mano durante las pruebas)
 - **`db_hecha_a_mano.jpg`** - Imagen del boceto inicial del diseño de la base de datos (hecho en papel)
 - **`dbpi.png`** - Diagrama final limpio de la base de datos con todas las relaciones
-- **`universidad.db`** - Archivo de la base de datos SQLite con datos de prueba ya cargados (no elimines este archivo)
+- **`universidad.db`** - Archivo de la base de datos SQLite con datos de prueba ya cargados (viene prepoblada, no la elimines)
 - **Carpetas del proyecto** (`models/`, `routers/`, `utils/`, etc) - El codigo fuente de la API
 
 ---
@@ -99,11 +101,11 @@ A continuacion el boceto original en el que se penso el modelo relacional (papel
 
 **Boceto inicial (diseño a mano):**
 
-![Diseño a mano de la base de datos](/img/db_hecha_a_mano.jpg)
+![Diseño a mano de la base de datos](db_hecha_a_mano.jpg)
 
 **Diagrama final de la base de datos:**
 
-![Diagrama final de la base de datos](/img/dbpi.png)
+![Diagrama final de la base de datos](dbpi.png)
 
 Resumen de las relaciones principales:
 
@@ -136,10 +138,18 @@ git --version
 
 1. **Clonar el repositorio**
 
+Abre una terminal en la carpeta donde quieras descargar el proyecto y ejecuta:
+
 ```bash
-git clone <URL-del-repositorio>
-cd <nombre-de-la-carpeta-del-proyecto>
+git clone https://github.com/kevinhndz/Backend.git
+cd Backend
 ```
+
+O si  preferis, podes descargar el ZIP directamente desde:
+```
+https://github.com/kevinhndz/Backend
+```
+(En Github, boton verde "Code" -> "Download ZIP")
 
 2. **Crear un entorno virtual**
 
@@ -167,25 +177,24 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-> El paquete `python-jose` se usa para los boletos (JWT). Si al levantar el proyecto sale un error de tipo `ModuleNotFoundError: No module named 'jose'`, instalarlo manualmente con:
+> El paquete `python-jose` se usa para los boletos (JWT) pero no aparece dentro del `requirements.txt`. Si al levantar el proyecto sale un error de tipo `ModuleNotFoundError: No module named 'jose'`, instalarlo manualmente con:
 > ```bash
 > pip install python-jose
 > ```
 
+5. **Crear el archivo `.env`**
 
-
- **Crear el archivo `.env`**
 El archivo `.env` no viene en el repositorio por razones de seguridad (aunque si descargaras el `.gitignore`, que es parte del repo, veras que `.env` esta listado ahi para protegerlo). 
- 
+
 Debes crear manualmente un archivo llamado `.env` en la raiz del proyecto (en la misma carpeta donde esta `app.py`) y agregar estas dos lineas:
- 
+
 ```
 UBICACION_ALMACEN = "sqlite:///./universidad.db"
 SECRET_KEY = "ExampleSecretKey32CharactersLong!"
 ```
- 
-> **Nota:** La `SECRET_KEY` debe tener minimo 32 caracteres.
- 
+
+> **Nota:** La `SECRET_KEY` debe tener minimo 32 caracteres. El valor de ejemplo arriba cumple con eso y es seguro para pruebas academicas.
+
 La base de datos (`universidad.db`) ya viene prepoblada con datos de prueba (usuarios, estudiantes, profesores, carreras, clases, etc), por lo que no necesitas crear nada manualmente en la BD: esta lista para probar.
 
 ## Ejecutar el proyecto
@@ -279,7 +288,14 @@ Se incluye un documento Word llamado **`Pruebas_API.docx`** que contiene ejemplo
 - El rol requerido para ejecutar ese endpoint
 - El JSON de ejemplo que se debe enviar en el body
 
-**Descargar:** `Pruebas_API.docx`
+**Como descargar el archivo:**
+
+Si descargaste este proyecto desde GitHub (como ZIP o clonado), el archivo `Pruebas_API.docx` ya debe estar en la carpeta raiz del proyecto. Si no lo ves, descargalo desde aqui:
+
+1. Entra a: `https://github.com/kevinhndz/Backend`
+2. Ve a la carpeta o seccion donde este el archivo `Pruebas_API.docx`
+3. Click derecho en el archivo -> "Guardar enlace como..."
+4. O haz click en el archivo y luego busca el boton de descarga
 
 Este documento es especialmente util porque permite trabajar mas rapido durante las pruebas sin tener que escribir manualmente cada JSON, y sirve como referencia rapida de la estructura de datos que acepta cada endpoint.
 
@@ -310,5 +326,7 @@ Cada modulo (excepto login) sigue el mismo patron de operaciones:
 ## Notas finales
 
 - La base de datos usada por defecto es SQLite, por lo que no se necesita instalar ningun motor de base de datos aparte para probar el proyecto.
+- El archivo `.env` no viene en el repositorio por seguridad. Esta protegido en el `.gitignore` para evitar que se suba accidentalmente al repo. Tú debes crear el `.env` manualmente en tu compu con las 2 lineas de configuracion (ver paso 5 de instalacion).
+- El archivo `.gitignore` **SÍ se descarga** cuando clonas el proyecto, porque es parte del repo. Su funcion es indicar a Git cuales archivos no debe subir (como `.env`, `venv/`, `__pycache__/`, etc).
 - Si se elimina el archivo `universidad.db`, la base de datos se vuelve a crear vacia la proxima vez que se corra el proyecto (gracias a `miClaseBase.metadata.create_all` en `app.py`), pero se pierde toda la informacion de prueba, por lo que habria que volver a registrar usuarios, carreras, clases, etc. manualmente antes de poder iniciar sesion.
 - Los codigos de error mas comunes durante las pruebas son: `401` (token invalido o vencido), `403` (el rol del usuario no tiene permiso para ese endpoint), `404` (el registro no existe) y `409` (el registro ya existe, por ejemplo un correo o codigo duplicado).
