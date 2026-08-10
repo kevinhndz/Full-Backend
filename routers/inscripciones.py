@@ -14,6 +14,7 @@ from models.tablas import (
     Insc_Profesor_Carrera,
     Insc_Profesor_Seguro
 )
+from utils.seguridad import administrador_o_profesor, solo_administrador  # ← AGREGAR
 
 router = APIRouter(
     prefix="/inscripciones",
@@ -23,7 +24,10 @@ router = APIRouter(
 # ============= ESTUDIANTE - CLASE =============
 
 @router.post("/estudiante-clase", status_code=status.HTTP_201_CREATED)
-def inscribir_estudiante_clase(json: RevisarInsc_Estudiante_Clase, base_datos: Session = Depends(abrir_puerta_a_bd)):
+def inscribir_estudiante_clase(
+    json: RevisarInsc_Estudiante_Clase,
+    info_user: dict = Depends(administrador_o_profesor),  # ← AGREGAR
+    base_datos: Session = Depends(abrir_puerta_a_bd)):
     check = base_datos.query(Insc_Estudiante_Clase).filter(
         Insc_Estudiante_Clase.id_estudiante == json.id_estudiante,
         Insc_Estudiante_Clase.id_clase == json.id_clase
@@ -47,7 +51,10 @@ def inscribir_estudiante_clase(json: RevisarInsc_Estudiante_Clase, base_datos: S
     }
 
 @router.get("/clase/{id_clase}")
-def listar_estudiantes_por_clase(id_clase: int, base_datos: Session = Depends(abrir_puerta_a_bd)):
+def listar_estudiantes_por_clase(
+    id_clase: int,
+    info_user: dict = Depends(administrador_o_profesor),  # ← AGREGAR
+    base_datos: Session = Depends(abrir_puerta_a_bd)):
     revisar = base_datos.query(Insc_Estudiante_Clase).filter(Insc_Estudiante_Clase.id_clase == id_clase).all()
     
     if not revisar:
@@ -62,7 +69,10 @@ def listar_estudiantes_por_clase(id_clase: int, base_datos: Session = Depends(ab
     }
 
 @router.get("/estudiante/{id_estudiante}")
-def listar_clases_por_estudiante(id_estudiante: int, base_datos: Session = Depends(abrir_puerta_a_bd)):
+def listar_clases_por_estudiante(
+    id_estudiante: int,
+    info_user: dict = Depends(administrador_o_profesor),  # ← AGREGAR
+    base_datos: Session = Depends(abrir_puerta_a_bd)):
     revisar = base_datos.query(Insc_Estudiante_Clase).filter(Insc_Estudiante_Clase.id_estudiante == id_estudiante).all()
     
     if not revisar:
@@ -77,7 +87,10 @@ def listar_clases_por_estudiante(id_estudiante: int, base_datos: Session = Depen
     }
 
 @router.delete("/estudiante-clase")
-def desinscribir_estudiante_clase(json: RevisarInsc_Estudiante_Clase, base_datos: Session = Depends(abrir_puerta_a_bd)):
+def desinscribir_estudiante_clase(
+    json: RevisarInsc_Estudiante_Clase,
+    info_user: dict = Depends(solo_administrador),  # ← AGREGAR
+    base_datos: Session = Depends(abrir_puerta_a_bd)):
     check = base_datos.query(Insc_Estudiante_Clase).filter(
         Insc_Estudiante_Clase.id_estudiante == json.id_estudiante,
         Insc_Estudiante_Clase.id_clase == json.id_clase
@@ -99,7 +112,10 @@ def desinscribir_estudiante_clase(json: RevisarInsc_Estudiante_Clase, base_datos
 # ============= PROFESOR - CLASE =============
 
 @router.post("/profesor-clase", status_code=status.HTTP_201_CREATED)
-def asignar_profesor_clase(json: RevisarInsc_Profesor_Clase, base_datos: Session = Depends(abrir_puerta_a_bd)):
+def asignar_profesor_clase(
+    json: RevisarInsc_Profesor_Clase,
+    info_user: dict = Depends(solo_administrador),  # ← AGREGAR
+    base_datos: Session = Depends(abrir_puerta_a_bd)):
     check = base_datos.query(Insc_Profesor_Clase).filter(
         Insc_Profesor_Clase.id_profesor == json.id_profesor,
         Insc_Profesor_Clase.id_clase == json.id_clase
@@ -123,7 +139,10 @@ def asignar_profesor_clase(json: RevisarInsc_Profesor_Clase, base_datos: Session
     }
 
 @router.delete("/profesor-clase")
-def desasignar_profesor_clase(json: RevisarInsc_Profesor_Clase, base_datos: Session = Depends(abrir_puerta_a_bd)):
+def desasignar_profesor_clase(
+    json: RevisarInsc_Profesor_Clase,
+    info_user: dict = Depends(solo_administrador),  # ← AGREGAR
+    base_datos: Session = Depends(abrir_puerta_a_bd)):
     check = base_datos.query(Insc_Profesor_Clase).filter(
         Insc_Profesor_Clase.id_profesor == json.id_profesor,
         Insc_Profesor_Clase.id_clase == json.id_clase
@@ -145,7 +164,10 @@ def desasignar_profesor_clase(json: RevisarInsc_Profesor_Clase, base_datos: Sess
 # ============= PROFESOR - CARRERA =============
 
 @router.post("/profesor-carrera", status_code=status.HTTP_201_CREATED)
-def asignar_profesor_carrera(json: RevisarInsc_Profesor_Carrera, base_datos: Session = Depends(abrir_puerta_a_bd)):
+def asignar_profesor_carrera(
+    json: RevisarInsc_Profesor_Carrera,
+    info_user: dict = Depends(solo_administrador),  # ← AGREGAR
+    base_datos: Session = Depends(abrir_puerta_a_bd)):
     check = base_datos.query(Insc_Profesor_Carrera).filter(
         Insc_Profesor_Carrera.id_profesor == json.id_profesor,
         Insc_Profesor_Carrera.id_carrera == json.id_carrera
@@ -169,7 +191,10 @@ def asignar_profesor_carrera(json: RevisarInsc_Profesor_Carrera, base_datos: Ses
     }
 
 @router.delete("/profesor-carrera")
-def desasignar_profesor_carrera(json: RevisarInsc_Profesor_Carrera, base_datos: Session = Depends(abrir_puerta_a_bd)):
+def desasignar_profesor_carrera(
+    json: RevisarInsc_Profesor_Carrera,
+    info_user: dict = Depends(solo_administrador),  
+    base_datos: Session = Depends(abrir_puerta_a_bd)):
     check = base_datos.query(Insc_Profesor_Carrera).filter(
         Insc_Profesor_Carrera.id_profesor == json.id_profesor,
         Insc_Profesor_Carrera.id_carrera == json.id_carrera
@@ -191,7 +216,10 @@ def desasignar_profesor_carrera(json: RevisarInsc_Profesor_Carrera, base_datos: 
 # ============= PROFESOR - SEGURO =============
 
 @router.post("/profesor-seguro", status_code=status.HTTP_201_CREATED)
-def asignar_profesor_seguro(json: RevisarInsc_Profesor_Seguro, base_datos: Session = Depends(abrir_puerta_a_bd)):
+def asignar_profesor_seguro(
+    json: RevisarInsc_Profesor_Seguro,
+    info_user: dict = Depends(administrador_o_profesor),  
+    base_datos: Session = Depends(abrir_puerta_a_bd)):
     check = base_datos.query(Insc_Profesor_Seguro).filter(
         Insc_Profesor_Seguro.id_profesor == json.id_profesor,
         Insc_Profesor_Seguro.id_seguro == json.id_seguro
@@ -215,7 +243,10 @@ def asignar_profesor_seguro(json: RevisarInsc_Profesor_Seguro, base_datos: Sessi
     }
 
 @router.delete("/profesor-seguro")
-def desasignar_profesor_seguro(json: RevisarInsc_Profesor_Seguro, base_datos: Session = Depends(abrir_puerta_a_bd)):
+def desasignar_profesor_seguro(
+    json: RevisarInsc_Profesor_Seguro,
+    info_user: dict = Depends(solo_administrador),  
+    base_datos: Session = Depends(abrir_puerta_a_bd)):
     check = base_datos.query(Insc_Profesor_Seguro).filter(
         Insc_Profesor_Seguro.id_profesor == json.id_profesor,
         Insc_Profesor_Seguro.id_seguro == json.id_seguro

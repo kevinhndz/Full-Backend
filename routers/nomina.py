@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from models.almacen import abrir_puerta_a_bd
 from models.filtro_seguridad import RevisarNomina
 from models.tablas import Nomina
+from utils.seguridad import administrador_o_profesor, solo_administrador  # ← AGREGAR
 
 router = APIRouter(
     prefix="/nomina",
@@ -11,7 +12,9 @@ router = APIRouter(
 )
 
 @router.get("/")
-def ver_listado_nomina(base_datos: Session = Depends(abrir_puerta_a_bd)):
+def ver_listado_nomina(
+    info_user: dict = Depends(administrador_o_profesor),  # ← AGREGAR
+    base_datos: Session = Depends(abrir_puerta_a_bd)):
     many = 0
     revisar = base_datos.query(Nomina).all()
     
@@ -29,7 +32,10 @@ def ver_listado_nomina(base_datos: Session = Depends(abrir_puerta_a_bd)):
         }
 
 @router.get("/{id_url}")
-def filtrar_por_id(id_url: int, base_datos: Session = Depends(abrir_puerta_a_bd)):
+def filtrar_por_id(
+    id_url: int,
+    info_user: dict = Depends(administrador_o_profesor),  # ← AGREGAR
+    base_datos: Session = Depends(abrir_puerta_a_bd)):
     check = base_datos.query(Nomina).filter(Nomina.id == id_url).first()
     
     if check is None:
@@ -41,7 +47,10 @@ def filtrar_por_id(id_url: int, base_datos: Session = Depends(abrir_puerta_a_bd)
         return check
 
 @router.post("/", status_code=status.HTTP_201_CREATED)
-def crear_nomina(json: RevisarNomina, base_datos: Session = Depends(abrir_puerta_a_bd)):
+def crear_nomina(
+    json: RevisarNomina,
+    info_user: dict = Depends(administrador_o_profesor),  # ← AGREGAR
+    base_datos: Session = Depends(abrir_puerta_a_bd)):
     new_data = Nomina(
         id_profesor=json.id_profesor,
         id_rrhh=json.id_rrhh
@@ -55,7 +64,11 @@ def crear_nomina(json: RevisarNomina, base_datos: Session = Depends(abrir_puerta
     }
 
 @router.put("/{id}")
-def actualizar_nomina(id: int, json: RevisarNomina, base_datos: Session = Depends(abrir_puerta_a_bd)):
+def actualizar_nomina(
+    id: int,
+    json: RevisarNomina,
+    info_user: dict = Depends(administrador_o_profesor),  # ← AGREGAR
+    base_datos: Session = Depends(abrir_puerta_a_bd)):
     check = base_datos.query(Nomina).filter(Nomina.id == id).first()
     
     if check is None:
@@ -76,7 +89,10 @@ def actualizar_nomina(id: int, json: RevisarNomina, base_datos: Session = Depend
     }
 
 @router.delete("/{id}")
-def eliminar_por_id(id: int, base_datos: Session = Depends(abrir_puerta_a_bd)):
+def eliminar_por_id(
+    id: int,
+    info_user: dict = Depends(solo_administrador),  # ← AGREGAR
+    base_datos: Session = Depends(abrir_puerta_a_bd)):
     check = base_datos.query(Nomina).filter(Nomina.id == id).first()
     if check is None:
         raise HTTPException(
@@ -91,7 +107,10 @@ def eliminar_por_id(id: int, base_datos: Session = Depends(abrir_puerta_a_bd)):
         }
 
 @router.get("/profesor/{id_profesor}")
-def nomina_por_profesor(id_profesor: int, base_datos: Session = Depends(abrir_puerta_a_bd)):
+def nomina_por_profesor(
+    id_profesor: int,
+    info_user: dict = Depends(administrador_o_profesor),  # ← AGREGAR
+    base_datos: Session = Depends(abrir_puerta_a_bd)):
     revisar = base_datos.query(Nomina).filter(Nomina.id_profesor == id_profesor).all()
     
     if not revisar:
