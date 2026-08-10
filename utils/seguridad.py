@@ -51,15 +51,9 @@ def administrador_o_profesor(info_user: dict = Depends(el_vigilante)):
         raise HTTPException(status_code=403, detail="No permitido")
     return info_user
 
-def estudiante_o_administrador(info_user: dict = Depends(el_vigilante)):
-    
-    if info_user["rol"] not in ["Estudiante, Profesor"]:
-        raise HTTPException(status_code= 403, detail="No permitido")
-    else:
-        return info_user
     
 def todos_pueden(info_user: dict = Depends(el_vigilante)):
-    if info_user ["rol"] not in ["Administrador, Profesor, Estudiante"]:
+    if info_user ["rol"] not in ["Administrador", "Profesor", "Estudiante"]:
         raise HTTPException(status_code= 403, detail="No permitido")
     else:
         return info_user

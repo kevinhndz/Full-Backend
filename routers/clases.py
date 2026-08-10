@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from models.almacen import abrir_puerta_a_bd
 from models.filtro_seguridad import RevisarClases
 from models.tablas import Clases
+from utils.seguridad import administrador_o_profesor, solo_administrador  
 
 router = APIRouter(
     prefix="/clases",
@@ -11,7 +12,9 @@ router = APIRouter(
 )
 
 @router.get("/")
-def ver_listado_de_clases(base_datos: Session = Depends(abrir_puerta_a_bd)):
+def ver_listado_de_clases(
+    info_user: dict = Depends(administrador_o_profesor),  
+    base_datos: Session = Depends(abrir_puerta_a_bd)):
     many = 0
     revisar = base_datos.query(Clases).all()
     
@@ -29,7 +32,10 @@ def ver_listado_de_clases(base_datos: Session = Depends(abrir_puerta_a_bd)):
         }
 
 @router.get("/{id_url}")
-def filtrar_por_id(id_url: int, base_datos: Session = Depends(abrir_puerta_a_bd)):
+def filtrar_por_id(
+    id_url: int,
+    info_user: dict = Depends(administrador_o_profesor),  
+    base_datos: Session = Depends(abrir_puerta_a_bd)):
     check = base_datos.query(Clases).filter(Clases.id == id_url).first()
     
     if check is None:
@@ -41,7 +47,10 @@ def filtrar_por_id(id_url: int, base_datos: Session = Depends(abrir_puerta_a_bd)
         return check
 
 @router.post("/", status_code=status.HTTP_201_CREATED)
-def crear_clase(json: RevisarClases, base_datos: Session = Depends(abrir_puerta_a_bd)):
+def crear_clase(
+    json: RevisarClases,
+    info_user: dict = Depends(administrador_o_profesor),  
+    base_datos: Session = Depends(abrir_puerta_a_bd)):
     check = base_datos.query(Clases).filter(Clases.codigo == json.codigo).first()
     
     if check is None:
@@ -67,7 +76,11 @@ def crear_clase(json: RevisarClases, base_datos: Session = Depends(abrir_puerta_
         )
 
 @router.put("/{id}")
-def actualizar_clase(id: int, json: RevisarClases, base_datos: Session = Depends(abrir_puerta_a_bd)):
+def actualizar_clase(
+    id: int,
+    json: RevisarClases,
+    info_user: dict = Depends(administrador_o_profesor),  
+    base_datos: Session = Depends(abrir_puerta_a_bd)):
     check = base_datos.query(Clases).filter(Clases.id == id).first()
     
     if check is None:
@@ -92,7 +105,10 @@ def actualizar_clase(id: int, json: RevisarClases, base_datos: Session = Depends
     }
 
 @router.delete("/{id}")
-def eliminar_por_id(id: int, base_datos: Session = Depends(abrir_puerta_a_bd)):
+def eliminar_por_id(
+    id: int,
+    info_user: dict = Depends(solo_administrador),  
+    base_datos: Session = Depends(abrir_puerta_a_bd)):
     check = base_datos.query(Clases).filter(Clases.id == id).first()
     if check is None:
         raise HTTPException(
