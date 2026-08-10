@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from models.almacen import abrir_puerta_a_bd
 from models.filtro_seguridad import RevisarRecursosHumanos
 from models.tablas import RecursosHumanos
+from utils.seguridad import solo_administrador  # ← AGREGAR
 
 router = APIRouter(
     prefix="/rrhh",
@@ -11,7 +12,9 @@ router = APIRouter(
 )
 
 @router.get("/")
-def ver_listado_rrhh(base_datos: Session = Depends(abrir_puerta_a_bd)):
+def ver_listado_rrhh(
+    info_user: dict = Depends(solo_administrador),  
+    base_datos: Session = Depends(abrir_puerta_a_bd)):
     many = 0
     revisar = base_datos.query(RecursosHumanos).all()
     
@@ -29,7 +32,10 @@ def ver_listado_rrhh(base_datos: Session = Depends(abrir_puerta_a_bd)):
         }
 
 @router.get("/{id_url}")
-def filtrar_por_id(id_url: int, base_datos: Session = Depends(abrir_puerta_a_bd)):
+def filtrar_por_id(
+    id_url: int,
+    info_user: dict = Depends(solo_administrador),
+    base_datos: Session = Depends(abrir_puerta_a_bd)):
     check = base_datos.query(RecursosHumanos).filter(RecursosHumanos.id == id_url).first()
     
     if check is None:
@@ -41,7 +47,10 @@ def filtrar_por_id(id_url: int, base_datos: Session = Depends(abrir_puerta_a_bd)
         return check
 
 @router.post("/", status_code=status.HTTP_201_CREATED)
-def crear_rrhh(json: RevisarRecursosHumanos, base_datos: Session = Depends(abrir_puerta_a_bd)):
+def crear_rrhh(
+    json: RevisarRecursosHumanos,
+    info_user: dict = Depends(solo_administrador),  
+    base_datos: Session = Depends(abrir_puerta_a_bd)):
     check_correo = base_datos.query(RecursosHumanos).filter(RecursosHumanos.correo == json.correo).first()
     check_empleado = base_datos.query(RecursosHumanos).filter(RecursosHumanos.codigo_empleado == json.codigo_empleado).first()
     
@@ -74,7 +83,11 @@ def crear_rrhh(json: RevisarRecursosHumanos, base_datos: Session = Depends(abrir
     }
 
 @router.put("/{id}")
-def actualizar_rrhh(id: int, json: RevisarRecursosHumanos, base_datos: Session = Depends(abrir_puerta_a_bd)):
+def actualizar_rrhh(
+    id: int,
+    json: RevisarRecursosHumanos,
+    info_user: dict = Depends(solo_administrador),  
+    base_datos: Session = Depends(abrir_puerta_a_bd)):
     check = base_datos.query(RecursosHumanos).filter(RecursosHumanos.id == id).first()
     
     if check is None:
@@ -99,7 +112,10 @@ def actualizar_rrhh(id: int, json: RevisarRecursosHumanos, base_datos: Session =
     }
 
 @router.delete("/{id}")
-def eliminar_por_id(id: int, base_datos: Session = Depends(abrir_puerta_a_bd)):
+def eliminar_por_id(
+    id: int,
+    info_user: dict = Depends(solo_administrador),  
+    base_datos: Session = Depends(abrir_puerta_a_bd)):
     check = base_datos.query(RecursosHumanos).filter(RecursosHumanos.id == id).first()
     if check is None:
         raise HTTPException(
