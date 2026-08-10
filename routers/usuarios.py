@@ -5,6 +5,7 @@ from models.almacen import abrir_puerta_a_bd
 from models.filtro_seguridad import RevisarUsuarios, RevisarLogin
 from models.tablas import Usuarios
 from utils.boletos import crear_boleto, verificar_boleto
+from utils.seguridad import solo_administrador  
 
 router = APIRouter(
     prefix="/usuarios",
@@ -12,7 +13,9 @@ router = APIRouter(
 )
 
 @router.get("/")
-def ver_listado_de_usuarios(base_datos: Session = Depends(abrir_puerta_a_bd)):
+def ver_listado_de_usuarios(
+    info_user: dict = Depends(solo_administrador),  
+    base_datos: Session = Depends(abrir_puerta_a_bd)):
     many = 0
     revisar = base_datos.query(Usuarios).all()
     
@@ -30,7 +33,10 @@ def ver_listado_de_usuarios(base_datos: Session = Depends(abrir_puerta_a_bd)):
         }
 
 @router.get("/{id_url}")
-def filtrar_por_id(id_url: int, base_datos: Session = Depends(abrir_puerta_a_bd)):
+def filtrar_por_id(
+    id_url: int,
+    info_user: dict = Depends(solo_administrador),  
+    base_datos: Session = Depends(abrir_puerta_a_bd)):
     check = base_datos.query(Usuarios).filter(Usuarios.id == id_url).first()
     
     if check is None:
@@ -42,7 +48,10 @@ def filtrar_por_id(id_url: int, base_datos: Session = Depends(abrir_puerta_a_bd)
         return check
 
 @router.post("/", status_code=status.HTTP_201_CREATED)
-def crear_usuario(json: RevisarUsuarios, base_datos: Session = Depends(abrir_puerta_a_bd)):
+def crear_usuario(
+    json: RevisarUsuarios,
+    info_user: dict = Depends(solo_administrador),  
+    base_datos: Session = Depends(abrir_puerta_a_bd)):
     check = base_datos.query(Usuarios).filter(Usuarios.user == json.user).first()
     
     if check is None:
@@ -65,7 +74,11 @@ def crear_usuario(json: RevisarUsuarios, base_datos: Session = Depends(abrir_pue
         )
 
 @router.put("/{id}")
-def actualizar_usuario(id: int, json: RevisarUsuarios, base_datos: Session = Depends(abrir_puerta_a_bd)):
+def actualizar_usuario(
+    id: int,
+    json: RevisarUsuarios,
+    info_user: dict = Depends(solo_administrador),  
+    base_datos: Session = Depends(abrir_puerta_a_bd)):
     check = base_datos.query(Usuarios).filter(Usuarios.id == id).first()
     
     if check is None:
@@ -87,7 +100,10 @@ def actualizar_usuario(id: int, json: RevisarUsuarios, base_datos: Session = Dep
     }
 
 @router.delete("/{id}")
-def eliminar_por_id(id: int, base_datos: Session = Depends(abrir_puerta_a_bd)):
+def eliminar_por_id(
+    id: int,
+    info_user: dict = Depends(solo_administrador),  
+    base_datos: Session = Depends(abrir_puerta_a_bd)):
     check = base_datos.query(Usuarios).filter(Usuarios.id == id).first()
     if check is None:
         raise HTTPException(
@@ -100,10 +116,5 @@ def eliminar_por_id(id: int, base_datos: Session = Depends(abrir_puerta_a_bd)):
         return{
             "Alerta": f"Usuario con id #{id} ha sido eliminado del sistema!"
         }
-
-
-
-    
-        
     
     
