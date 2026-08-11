@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Workspace</title>
+</head>
+<body>
+
+  
+  <h1 id="user-display">Cargando usuario...</h1>
+  
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      // 1. pop out items del cache
+      const user = localStorage.getItem("user");
+      const boleto = localStorage.getItem("boleto");
+
+      
+      if (user && boleto) {
+        
+        document.getElementById("user-display").textContent = `¡Hola, ${user}!`;
+        document.getElementById.style.color = "green";
+    
+
+      } else {
+        
+        alert("Sesion no valida. Por favor inicia sesion.");
+        window.location.href = "/login";
+      }
+    });
+  </script>
+</body>
+</html>

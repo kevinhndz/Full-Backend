@@ -4,14 +4,70 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
+    <link rel="stylesheet" href="/static/estilos.css">
 </head>
 <body>
    
+     <h1 class="TituloPrincipal">¡Bienvenido de Vuelta!</h1>
 
-    <h1>Bienvenido de Vuelta !</h1>
+     <br>
+     <br>
 
-     <h3>Ingresa Sesion</h3>
+     <h3 class="SubtituloPrincipal">Inicia Sesion</h3>
 
+     <nav class="navbar-login">
+        <ul>
+          <a href="/"><li>Regresar a Inicio</li></a>
+          <a href="/"><li>Registrate</li></a>
+        </ul>
+     </nav>
+
+     <div class="contenedor-principal">
+      <form id="login" method="post">
+       
+       <label for="usuario">Tu Usuario:</label>
+       <input type="text" id="usuario" name="usuario" placeholder="kevstpg123" required> 
+       <br> <br>
+       
+       <label for="password">Tu Contraseña:</label>
+       <input type="password" id="password" name="password" required>
+       <br> <br>
+       
+       <button type="submit">Iniciar Sesión</button>
+      </form>
+     </div>
+
+     
+     <p id="welcome"></p>
     
 </body>
+
+<script>
+  document.getElementById("login").addEventListener("submit", async function(e){
+   e.preventDefault(); 
+
+   const usuario = document.getElementById("usuario").value;
+   const password = document.getElementById("password").value;
+
+   const respuesta = await fetch("/recepcion/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user: usuario, password: password })
+   });
+
+   const datos = await respuesta.json();
+   const mensajeElemento = document.getElementById("welcome");
+
+   if (respuesta.ok) {
+    
+     localStorage.setItem("boleto", datos.boleto);
+     localStorage.setItem("user", datos.user);
+     
+     setTimeout(() => window.location.href = '/workspace', 1800);
+   } else {
+     mensajeElemento.innerHTML = "Usuario o contraseña incorrectos";
+     mensajeElemento.style.color = "red";
+   }
+  });
+</script>
 </html>

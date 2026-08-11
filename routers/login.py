@@ -32,6 +32,8 @@ def login(
   
     boleto = crear_boleto(check.id, check.user, check.rol)
     
+    
+    
     return {
         "boleto": boleto,
         "user": check.user,
