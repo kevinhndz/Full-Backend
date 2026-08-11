@@ -8,7 +8,7 @@
 </head>
 <body>
    
-     <h1 class="TituloPrincipal">¡Bienvenido de Vuelta!</h1>
+     <h1 class="TituloPrincipal">Sistema de Gestion/ Registro</h1>
 
      <br>
      <br>
@@ -62,6 +62,7 @@
     
      localStorage.setItem("boleto", datos.boleto);
      localStorage.setItem("user", datos.user);
+     document.getElementById("welcome").textContent = "Bienvenido, redirgiendote...."
      
      setTimeout(() => window.location.href = '/workspace', 1800);
    } else {

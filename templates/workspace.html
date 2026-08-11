@@ -7,10 +7,15 @@
 <body>
 
   
-  <h1 id="user-display">Cargando usuario...</h1>
+  <h1 id="user-display"></h1>
+
+
   
 
-  <script>
+ 
+</body>
+
+ <script>
     document.addEventListener("DOMContentLoaded", function() {
       // 1. pop out items del cache
       const user = localStorage.getItem("user");
@@ -29,6 +34,8 @@
         window.location.href = "/login";
       }
     });
+
+
+    
   </script>
-</body>
 </html>
