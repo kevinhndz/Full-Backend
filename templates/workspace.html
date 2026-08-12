@@ -1,41 +1,33 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Workspace</title>
+<meta charset="UTF-8">
+<title>Panel - Sistema Academico</title>
+<link rel="stylesheet" href="/static/workspace.css">
 </head>
 <body>
 
-  
-  <h1 id="user-display"></h1>
+<header>
+  <h2 id="tituloUsuario">Panel</h2>
+  <button id="salir">Cerrar sesion</button>
+</header>
+
+<div id="cards"></div>
+
+<div id="contenido"></div>
 
 
-  
+<div id="modalFondo">
+  <div id="modalCaja">
+    <h3 id="modalTitulo">Registro</h3>
+    <form id="modalForm"></form>
+    <div class="modal-botones">
+      <button type="button" class="btn btn-sec" id="modalCancelar">Cancelar</button>
+      <button type="submit" form="modalForm" class="btn btn-primary">Guardar</button>
+    </div>
+  </div>
+</div>
 
- 
+<script src="/static/workspace.js"></script>
 </body>
-
- <script>
-    document.addEventListener("DOMContentLoaded", function() {
-      // 1. pop out items del cache
-      const user = localStorage.getItem("user");
-      const boleto = localStorage.getItem("boleto");
-
-      
-      if (user && boleto) {
-        
-        document.getElementById("user-display").textContent = `¡Hola, ${user}!`;
-        document.getElementById.style.color = "green";
-    
-
-      } else {
-        
-        alert("Sesion no valida. Por favor inicia sesion.");
-        window.location.href = "/login";
-      }
-    });
-
-
-    
-  </script>
 </html>
