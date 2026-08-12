@@ -7,6 +7,8 @@ from models.tablas import Usuarios
 from utils.boletos import crear_boleto, verificar_boleto
 from utils.seguridad import solo_administrador  
 
+from utils.hash import hashear_contrasena
+
 router = APIRouter(
     prefix="/usuarios",
     tags=["Usuarios"]
@@ -54,10 +56,12 @@ def crear_usuario(
     base_datos: Session = Depends(abrir_puerta_a_bd)):
     check = base_datos.query(Usuarios).filter(Usuarios.user == json.user).first()
     
+    contrasena_hasheada = hashear_contrasena(json.password)
+
     if check is None:
         new_data = Usuarios(
             user=json.user,
-            password=json.password,
+            password=contrasena_hasheada,
             rol=json.rol
         )
         base_datos.add(new_data)
